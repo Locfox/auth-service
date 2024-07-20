@@ -1,0 +1,210 @@
+openapi: 3.0.3
+info:
+  title: Auth service
+  version: 1.0.0
+  description: Auth service with jwt token
+  contact:
+    email: jandylokc@gmail.com
+    name: illia
+    url: https://gihtub.com/AndyLocks
+  license:
+    name: GPL
+    url: https://www.gnu.org/licenses/gpl-3.0.html
+servers:
+  - url: http://localhost:8080
+    variables: {}
+    description: Auth service running on pc
+  - url: http://auth:8080
+    variables: {}
+    description: Auth service running in docker compose
+paths:
+  /login:
+    summary: Login with password and email and get jwt token
+    description: Login with password and email and get jwt token
+    post:
+      summary: Login with password and email and get jwt token
+      description: Login with password and email and get jwt token
+      operationId: loginPost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailAndPassword'
+      responses:
+        '200':
+          description: ok
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '404':
+          description: user is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorWithDetails'
+        default:
+          description: 5xx
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - Login
+  /register:
+    summary: Create a new account
+    description: Creat a new account
+    post:
+      summary: 'Create a new account'
+      description: Create a new account
+      operationId: registerPost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Account'
+      responses:
+        200:
+          description: ok
+        400:
+          description: invalid email
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorWithDetails'
+        default:
+          description: 5xx
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - register
+  /logout:
+    summary: Add token to a blacklist
+    description: Add token to a blacklist
+    post:
+      summary: 'Add token to a blacklist'
+      description: Add token to a blacklist
+      operationId: logoutPost
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+          example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYm9iYSJ9.IE6ahNvc4g-fuQb89GT5LKPTkiypciBiovH4KlrbYEk'
+      responses:
+        200:
+          description: ok
+        401:
+          description: Token is invalid or no header Authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorWithDetails'
+        default:
+          description: 5xx
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+      tags:
+        - logout
+  /check_login:
+    summary: Check the token for validity
+    description: Check the token for validity
+    get:
+      summary: 'Check the token for validity'
+      description: Check the token for validity
+      operationId: checkLogin
+      parameters:
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYm9iYSJ9.IE6ahNvc4g-fuQb89GT5LKPTkiypciBiovH4KlrbYEk'
+      responses:
+        200:
+          description: ok
+          content:
+            '*/*':
+              schema:
+                type: boolean
+        default:
+          description: 5xx
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - utils
+components:
+  schemas:
+    Account:
+      type: object
+      required:
+        - email
+        - nickname
+        - password
+      properties:
+        password:
+          type: string
+          example: abobagleg
+        nickname:
+          type: string
+          example: ananas
+        email:
+          type: string
+          example: aboba@aboba.com
+    EmailAndPassword:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        password:
+          type: string
+          example: abobagleg
+        email:
+          type: string
+          example: aboba@aboba.com
+    Error:
+      type: object
+      required:
+        - title
+      properties:
+        timestamp:
+          type: string
+          example: 2024-07-19T21:32:10.185+00:00
+        status:
+          type: integer
+        error:
+          type: string
+          example: error
+        path:
+          type: string
+          example: /login
+    ErrorWithDetails:
+      type: object
+      properties:
+        type:
+          type: string
+          example: about:blank
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+          example: /login
+    Token:
+      type: string
+      description: jwt token
+      example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYm9iYSJ9.IE6ahNvc4g-fuQb89GT5LKPTkiypciBiovH4KlrbYEk
