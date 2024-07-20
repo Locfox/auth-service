@@ -1,6 +1,6 @@
 package com.locfox.filem.auth.entity;
 
-import com.locfox.filem.auth.repo.AccountRepository;
+import com.locfox.filem.auth.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,7 +21,7 @@ public class UserAccountDetailsService implements UserDetailsService {
         Account account = repository.getUserByNickname(username);
 
         if (account == null) {
-            throw new UsernameNotFoundException("User " + username + "is not found");
+            throw new UsernameNotFoundException(username);
         }
 
         return User.builder()

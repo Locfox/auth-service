@@ -5,6 +5,16 @@ import jakarta.persistence.*;
 @Entity
 @Table
 public class Account {
+    @Override
+    public String toString() {
+        return "Account{" +
+                "id=" + id +
+                ", nickname='" + nickname + '\'' +
+                ", email='" + email + '\'' +
+                ", passwordHash='" + passwordHash + '\'' +
+                '}';
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -60,4 +70,36 @@ public class Account {
     }
 
     public Account() {}
+
+    public static Builder builder() {
+        return new Builder(new Account());
+    }
+
+    public static final class Builder {
+
+        private Account instance;
+
+        public Builder(Account instance) {
+            this.instance = instance;
+        }
+
+        public Builder nickname(String nickname) {
+            this.instance.setNickname(nickname);
+            return this;
+        }
+
+        public Builder password(String passwordHash) {
+            this.instance.setPasswordHash(passwordHash);
+            return this;
+        }
+
+        public Builder email(String email) {
+            this.instance.setEmail(email);
+            return this;
+        }
+
+        public Account build() {
+            return this.instance;
+        }
+    }
 }
